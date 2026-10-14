@@ -123,10 +123,7 @@ app.post('/api/check', async (req, res) => {
     let trackingParamsBag = extractTrackingParamsBag(html);
     debug.trackingParamsBag = trackingParamsBag || 'NOT_FOUND';
 
-    // যদি trackingParamsBag না পাওয়া যায়, তাহলে ফাঁকা স্ট্রিং দিয়ে login চেষ্টা করি
-    // অথবা আমরা দ্বিতীয়বার homepage request দিয়ে cookies ধরে রাখি
     if (!trackingParamsBag) {
-      // দ্বিতীয়বার request দিই (cookies সহ)
       try {
         const resp2 = await axios.get('https://faphouse.com/', {
           ...axiosConfig,
@@ -141,7 +138,6 @@ app.post('/api/check', async (req, res) => {
       } catch (_) {}
     }
 
-    // এখনও না পেলে আমরা login এ ফাঁকা পাঠাব
     const finalBag = trackingParamsBag || '';
 
     // Step 2: Login
@@ -262,3 +258,11 @@ app.get('/', (req, res) => {
 });
 
 module.exports = app;
+
+// ─── Server Start (Render + Local এর জন্য) ───
+const PORT = process.env.PORT || 3000;
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server is running on port ${PORT}`);
+  });
+}
